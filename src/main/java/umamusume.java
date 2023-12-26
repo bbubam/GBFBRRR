@@ -3,6 +3,8 @@ import org.sikuli.script.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 public class umamusume {
@@ -10,16 +12,22 @@ public class umamusume {
     public static int intTotalLoop;
     public static int intWaitTime;
     public static boolean isOugi,QuickSummon;
-    public static String strImagePath, Summon1,Summon2,strPhone, strEventType, strAutomationType, strMCSkin, strDjeetaOrSarasa, V1orV2;
+    public static String strImagePath, Summon1,Summon2,strPhone, strEventType;
+    public static String strArcarumType, strAutomationType, strMCSkin, strDjeetaOrSarasa, V1orV2;
+
+    public static String[] arrDjeeta, arr2ndChar, arr3rdChar, arr4thChar;
+    public static String strDjeeta, str2ndChar, str3rdChar, str4thChar;
     public static Screen screen;
-    public static String characterName, characterSkill;
+    public static String characterName, characterSkill, characterTarget;
     public static boolean isReset = false;
     public static String strImageToCheck;
+
+    public static int intTurns;
+    public static HashMap<Integer, String[]> mapSkills = new HashMap<>();
 
     public static void main(String[] args)throws Exception {
         String[] strPath = umamusume.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("/");
         strImagePath = getPathExisting(strPath) + "..\\image\\"; //prod
-        System.out.println("Image Folder : " + strImagePath);
         //strImagePath = getPathExisting(strPath) + "image\\"; //dev
         Properties prop = new Properties();
         String strConfigName = "..\\config.cfg"; //prod
@@ -29,7 +37,6 @@ public class umamusume {
 
         //get config data
         strAutomationType = prop.get("automation_type").toString();
-        intTotalLoop = Integer.parseInt(prop.get("total_loop").toString());
         intWaitTime = Integer.parseInt(prop.get("wait_time").toString());
         isRelicBuster = prop.get("Raid_Auto_Type").toString();
         isOugi = Boolean.parseBoolean(prop.get("Ougi").toString());
@@ -44,6 +51,40 @@ public class umamusume {
         strImageToCheck = prop.get("Image_to_Check").toString();
         characterName = prop.get("Character_Name").toString();
         characterSkill = prop.get("Character_Skill").toString();
+        characterTarget = prop.get("Character_Target").toString();
+        strArcarumType = prop.get("arcarum_type").toString();
+        strDjeeta = prop.get("DjeetaSkill").toString();
+        str2ndChar = prop.get("2ndChar_Skill").toString();
+        str3rdChar = prop.get("3rdChar_Skill").toString();
+        str4thChar = prop.get("4thChar_Skill").toString();
+        intTurns = Integer.parseInt(prop.get("Turn").toString());
+
+
+
+        for (int i = 0; i < intTurns; i++) {
+            String strTurn = "Turn" + (i+1);
+            String[] arrSkill = prop.get(strTurn)
+                    .toString()
+                    .replace("[","").replace("]","")
+                    .split("-");
+            if (arrSkill.length == 0){
+                arrSkill = new String[]{"", "", "", ""};
+            }
+            mapSkills.put(i, arrSkill);
+        }
+
+//        for (int i = 0; i < umamusume.intTurns; i++) {
+//            String[] arrSkills = umamusume.mapSkills.get(i);
+//            arrDjeeta = arrSkills[0].split(",");
+//            arr2ndChar = arrSkills[1].split(",");
+//            arr3rdChar = arrSkills[2].split(",");
+//            arr4thChar = arrSkills[3].split(",");
+//        }
+
+//        arrDjeeta = strDjeeta.split(",");
+//        arr2ndChar = str2ndChar.split(",");
+//        arr3rdChar = str3rdChar.split(",");
+//        arr4thChar = str4thChar.split(",");
 
 
         try{
@@ -64,6 +105,9 @@ public class umamusume {
                 }else if(strAutomationType.equalsIgnoreCase("arcarum")){
                     Arcarum objArcarum = new Arcarum();
                     objArcarum.run(screen, strImagePath, intTotalLoop, intWaitTime);
+                }else if(strAutomationType.equalsIgnoreCase("manual_auto")){
+                    ManualAuto objManualAuto = new ManualAuto();
+                    objManualAuto.run(screen, strImagePath, intTotalLoop, intWaitTime);
                 }
             }catch(Exception f){
                 e.printStackTrace();
@@ -147,10 +191,13 @@ public class umamusume {
         String img = imgPath + imgName;
         boolean isExist = false;
         try {
-             if(screen.find(new Pattern(img)).getScore() > 0.90)
+            double score = screen.find(new Pattern(img)).getScore();
+             if(score > 0.90) {
                  isExist = true;
+                 System.out.println("Image : " + imgName + " Exists. Score : " + score);
+             }
         } catch (FindFailed e) {
-            System.out.println("Image Not Exist On Screen...");
+            System.out.println(imgName + " Not Exist On Screen...");
         }
         return isExist;
     }
@@ -197,8 +244,9 @@ public class umamusume {
             try {
                 Match matchImage = screen.find(new Pattern(img));
                 isExist = true;
+                System.out.println("Image : " + imgName + " Found.");
             }catch (FindFailed e) {
-                System.out.println("Waiting for image - " + imgName + " to be displayed.");
+                System.out.println("===== Waiting for image - " + imgName + " to be displayed. =====");
                 if(strAutomationType.equals("full_auto")){
                    checkTrigger(screen, strImagePath);
                    checkDead(screen, strImagePath);

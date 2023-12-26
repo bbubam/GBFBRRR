@@ -31,9 +31,12 @@ public class full_auto {
                         umamusume.clickImage(screen,strImagePath , "btnOugiOff" + ".png");
                 }
                 umamusume.waitUntilImage(screen,strImagePath , "btnFullAuto" + ".png");
-                if(umamusume.isExistScreen(screen, strImagePath, "KubiraSummer" + ".png")){
-                    umamusume.clickImage(screen, strImagePath, "KubiraSummer" + ".png");
-                    umamusume.clickImage(screen, strImagePath, "KubiraSummer3rdSkill" + ".png");
+                if(umamusume.isExistScreen(screen, strImagePath, umamusume.characterName + ".png")){
+                    umamusume.clickImage(screen, strImagePath, umamusume.characterName + ".png");
+                    umamusume.clickImage(screen, strImagePath, umamusume.characterSkill + ".png");
+                    if(!(umamusume.characterTarget.equals(""))){
+                        umamusume.clickImage(screen, strImagePath, umamusume.characterTarget + ".png");
+                    }
                     umamusume.clickImage(screen, strImagePath, "btnBack" + ".png");
                 }
                 umamusume.ExplicitWait(intWaitTime);

@@ -7,21 +7,9 @@ public class raid_auto {
         while (isRunning) {
             try {
                 System.out.println("Start of Loop");
-                umamusume.clickImage(screen, strImagePath, "tabGBFLife" + ".png");
-                Thread.sleep(1000);
-                umamusume.clickImage(screen, strImagePath, "tabRaidCode" + ".png");
-                umamusume.clickImage(screen, strImagePath, "tabGBF" + ".png");
                 umamusume.clickImage(screen, strImagePath, "imgInputRaid" + ".png");
-
-                if (umamusume.isExistScreen(screen, strImagePath, "btnJoinRoom" + ".png")) {
-                    Thread.sleep(1000);
-                } else {
-                    umamusume.clickImage(screen, strImagePath, "txtEnterID" + ".png");
-                }
-
-                umamusume.doubleClickImage(screen, strImagePath, "inputRaidCode" + ".png");
-                umamusume.pasteRaidCode(screen);
-                umamusume.clickImage(screen, strImagePath, "btnJoinRoom" + ".png");
+                umamusume.waitUntilImage(screen, strImagePath, "tabFinder" + ".png");
+                umamusume.clickImage(screen, strImagePath, "imgRaidHP" + ".png");
                 Thread.sleep(1000);
 
                 if(umamusume.isExistScreen(screen, strImagePath, "txtCaptcha" + ".png")){
@@ -58,12 +46,6 @@ public class raid_auto {
 
                 if (umamusume.isExistScreen(screen, strImagePath, "txtPendingBattle" + ".png")) {
                     umamusume.clearPendingBattles(screen, strImagePath);
-                    continue;
-                }
-
-                if (umamusume.isExistScreen(screen, strImagePath, "txtDoesnotMatch" + ".png")) {
-                    umamusume.clickImage(screen, strImagePath, "btnOK" + ".png");
-                    Thread.sleep(5000);
                     continue;
                 }
 
@@ -122,6 +104,9 @@ public class raid_auto {
                     if(umamusume.isExistScreen(screen, strImagePath, umamusume.characterName + ".png")){
                         umamusume.clickImage(screen, strImagePath, umamusume.characterName + ".png");
                         umamusume.clickImage(screen, strImagePath, umamusume.characterSkill + ".png");
+                        if(!(umamusume.characterTarget.equals(""))){
+                            umamusume.clickImage(screen, strImagePath, umamusume.characterTarget + ".png");
+                        }
                         umamusume.clickImage(screen, strImagePath, "btnBack" + ".png");
                     }
                     umamusume.waitUntilImage(screen, strImagePath, "txtExpGained" + ".png");
